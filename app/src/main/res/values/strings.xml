@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Tic-Tac-Toe</string>
+    <string name="statistics_card_title">Statistics</string>
+    <string name="statistics_matches">Matches Played: %d</string>
+    <string name="statistics_wins">Wins: %d</string>
+    <string name="statistics_losses">Losses: %d</string>
+    <string name="statistics_draws">Draws: %d</string>
+    <string name="end_dialog_win_title">You Win!</string>
+    <string name="end_dialog_win_message">Congratulations! You are very smart</string>
+    <string name="end_dialog_win_button">Hell yeah!</string>
+    <string name="end_dialog_loss_title">You lost!</string>
+    <string name="end_dialog_loss_message">Sorry, maybe you\'ll do better the next time</string>
+    <string name="end_dialog_loss_button">Rematch!</string>
+    <string name="end_dialog_draw_title">Draw!</string>
+    <string name="end_dialog_draw_message">What a battle of wits we have here...</string>
+    <string name="end_dialog_draw_button">Try again</string>
 </resources>

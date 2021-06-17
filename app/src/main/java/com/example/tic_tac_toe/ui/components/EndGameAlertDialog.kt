@@ -4,7 +4,9 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.example.tic_tac_toe.EndGame
+import com.example.tic_tac_toe.R
 
 @Composable
 fun EndGameAlertDialog(
@@ -17,19 +19,19 @@ fun EndGameAlertDialog(
 
     when (endGame) {
         EndGame.HUMAN_WIN -> {
-            title = "You Win!"
-            message = "Congratulations! You are very smart"
-            buttonTitle = "Hell yeah!"
+            title = stringResource(R.string.end_dialog_win_title)
+            message = stringResource(R.string.end_dialog_win_message)
+            buttonTitle = stringResource(R.string.end_dialog_win_button)
         }
         EndGame.COMPUTER_WIN -> {
-            title = "You lost!"
-            message = "Sorry, maybe you'll do better the next time"
-            buttonTitle = "Rematch!"
+            title = stringResource(R.string.end_dialog_loss_title)
+            message = stringResource(R.string.end_dialog_loss_message)
+            buttonTitle = stringResource(R.string.end_dialog_loss_button)
         }
         EndGame.DRAW -> {
-            title = "Draw!"
-            message = "What a battle of wits we have here..."
-            buttonTitle = "Try again"
+            title = stringResource(R.string.end_dialog_draw_title)
+            message = stringResource(R.string.end_dialog_draw_message)
+            buttonTitle = stringResource(R.string.end_dialog_draw_button)
         }
     }
 

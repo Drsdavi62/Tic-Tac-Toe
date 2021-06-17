@@ -12,7 +12,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.tic_tac_toe.R
 import com.example.tic_tac_toe.Statistics
 
 @Composable
@@ -29,16 +31,16 @@ fun StatisticsCard(
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
             Text(
-                text = "Statistics",
+                text = stringResource(R.string.statistics_card_title),
                 style = MaterialTheme.typography.h5,
                 color = MaterialTheme.colors.primary,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.padding(8.dp))
-            StatisticsText(text = "Matches Played: ${statistics.matches}")
-            StatisticsText(text = "Wins: ${statistics.wins}")
-            StatisticsText(text = "Losses: ${statistics.losses}")
-            StatisticsText(text = "Draws: ${statistics.draws}")
+            StatisticsText(text = stringResource(R.string.statistics_matches, statistics.matches))
+            StatisticsText(text = stringResource(R.string.statistics_wins, statistics.wins))
+            StatisticsText(text = stringResource(R.string.statistics_losses, statistics.losses))
+            StatisticsText(text = stringResource(R.string.statistics_draws, statistics.draws))
         }
     }
 }
