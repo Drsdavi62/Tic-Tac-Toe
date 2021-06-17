@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
+
+    <!-- The background color, preferably the same as your normal theme -->
+    <item>
+        <shape>
+            <size android:height="240dp" android:width="240dp"/>
+            <solid android:color="@color/purple_200"/>
+        </shape>
+    </item>
+
+    <!-- Your product logo - 144dp color version of your app icon -->
+    <item
+        android:width="200dp"
+        android:height="200dp"
+        android:drawable="@drawable/tic_tac_toe"
+        android:gravity="center">
+
+    </item>
+</layer-list>
