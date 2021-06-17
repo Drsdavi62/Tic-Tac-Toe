@@ -19,7 +19,9 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     var moves = mutableStateListOf<Move?>(null, null, null, null, null, null, null, null, null)
     val gameEnded = mutableStateOf<EndGame?>(null)
-    val touchAvailable = mutableStateOf(true)
+
+    private var playerStarts = true
+    val touchAvailable = mutableStateOf(playerStarts)
 
     val statistics = mutableStateOf(getInitialStatistics())
 
@@ -88,6 +90,14 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         gameEnded.value = null
         moves = mutableStateListOf(null, null, null, null, null, null, null, null, null)
         touchAvailable.value = true
+        if (playerStarts) {
+            viewModelScope.launch {
+                delay(300)
+                val computerPosition = (0 until 9).random()
+                moves[computerPosition] = Move(Player.COMPUTER, computerPosition)
+            }
+        }
+        playerStarts = !playerStarts
     }
 
     private fun isSquareOccupied(position: Int): Boolean {
