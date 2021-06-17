@@ -18,12 +18,12 @@ fun EndGameAlertDialog(
     when (endGame) {
         EndGame.HUMAN_WIN -> {
             title = "You Win!"
-            message = "You are so smart. You beat your own AI"
+            message = "Congratulations! You are very smart"
             buttonTitle = "Hell yeah!"
         }
         EndGame.COMPUTER_WIN -> {
             title = "You lost!"
-            message = "You programmed a super AI"
+            message = "Sorry, maybe you'll do better the next time"
             buttonTitle = "Rematch!"
         }
         EndGame.DRAW -> {
