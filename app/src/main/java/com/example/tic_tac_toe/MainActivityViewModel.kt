@@ -50,7 +50,6 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     private fun getInitialStatistics(): Statistics {
         return Statistics(
-            prefs.getInt(Statistics.MATCHES_KEY, 0),
             prefs.getInt(Statistics.WINS_KEY, 0),
             prefs.getInt(Statistics.LOSSES_KEY, 0),
             prefs.getInt(Statistics.DRAWS_KEY, 0),
@@ -82,7 +81,6 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                 statistics.value.draws += 1
             }
         }
-        statistics.value.matches += 1
         writeToPrefs()
     }
 
@@ -148,7 +146,6 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     private fun writeToPrefs() {
         val editor = prefs.edit()
-        editor.putInt(Statistics.MATCHES_KEY, statistics.value.matches)
         editor.putInt(Statistics.WINS_KEY, statistics.value.wins)
         editor.putInt(Statistics.LOSSES_KEY, statistics.value.losses)
         editor.putInt(Statistics.DRAWS_KEY, statistics.value.draws)
