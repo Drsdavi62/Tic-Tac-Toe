@@ -44,6 +44,7 @@ fun GameSquare (
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(cardSize / 2),
+                tint = MaterialTheme.colors.primary
             )
         }
     }

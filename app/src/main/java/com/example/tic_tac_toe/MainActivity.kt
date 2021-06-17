@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = Color.Red)
+                        .background(color = MaterialTheme.colors.primary)
                 ) {
 
                     val cardSize = (maxWidth - 20.dp) / 3
