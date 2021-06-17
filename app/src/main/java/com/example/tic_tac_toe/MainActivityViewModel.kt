@@ -3,6 +3,10 @@ package com.example.tic_tac_toe
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -111,8 +115,8 @@ class MainActivityViewModel : ViewModel() {
 }
 
 class Move(val player: Player, val boardIndex: Int) {
-    var indicator: ImageVector? = null
-        get() = if (player == Player.HUMAN) Icons.Filled.Close else Icons.Filled.Favorite
+    val indicator: ImageVector
+        get() = if (player == Player.HUMAN) Icons.Filled.Close else Icons.Outlined.FavoriteBorder
 }
 
 enum class Player {

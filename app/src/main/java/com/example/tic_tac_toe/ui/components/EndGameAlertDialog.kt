@@ -1,9 +1,10 @@
-package com.example.tic_tac_toe
+package com.example.tic_tac_toe.ui.components
 
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import com.example.tic_tac_toe.EndGame
 
 @Composable
 fun EndGameAlertDialog(
