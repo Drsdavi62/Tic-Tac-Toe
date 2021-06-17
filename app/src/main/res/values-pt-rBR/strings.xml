@@ -13,6 +13,6 @@
     <string name="end_dialog_loss_message">Sinto muito, mais sorte da próxima vez</string>
     <string name="end_dialog_loss_button">Revanche!</string>
     <string name="end_dialog_draw_title">Empate!</string>
-    <string name="end_dialog_draw_message">Que grande batalha tivemos aqui...</string>
+    <string name="end_dialog_draw_message">Que grande batalha tivemos aqui…</string>
     <string name="end_dialog_draw_button">Tentar novamente</string>
 </resources>

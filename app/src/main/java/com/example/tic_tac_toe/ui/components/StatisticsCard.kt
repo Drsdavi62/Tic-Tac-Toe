@@ -22,14 +22,14 @@ fun StatisticsCard(
     statistics: Statistics
 ) {
     Card(
-        shape = RoundedCornerShape(20),
+        shape = RoundedCornerShape(10),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp),
         contentColor = MaterialTheme.colors.surface,
         border = BorderStroke(2.dp, MaterialTheme.colors.onSurface)
     ) {
-        Column(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
+        Column(modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp)) {
             Text(
                 text = stringResource(R.string.statistics_card_title),
                 style = MaterialTheme.typography.h5,
