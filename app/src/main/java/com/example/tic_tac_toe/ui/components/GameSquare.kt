@@ -1,5 +1,6 @@
 package com.example.tic_tac_toe.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,7 +36,8 @@ fun GameSquare (
             onClick = {
                 if (!touchAvailable) return@Card
                 processMove(boardIndex)
-            }
+            },
+            border = BorderStroke(1.dp, color = MaterialTheme.colors.onSurface)
         ) {}
         indicator?.let { icon ->
             Icon(
@@ -44,7 +46,7 @@ fun GameSquare (
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(cardSize / 2),
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colors.onSurface
             )
         }
     }

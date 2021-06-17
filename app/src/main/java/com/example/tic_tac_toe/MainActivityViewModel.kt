@@ -1,31 +1,33 @@
 package com.example.tic_tac_toe
 
+import android.app.Application
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.materialIcon
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.preference.PreferenceManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainActivityViewModel : ViewModel() {
+class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val prefs = PreferenceManager.getDefaultSharedPreferences(getApplication())
 
     var moves = mutableStateListOf<Move?>(null, null, null, null, null, null, null, null, null)
     val gameEnded = mutableStateOf<EndGame?>(null)
     val touchAvailable = mutableStateOf(true)
 
+    val statistics = mutableStateOf(getInitialStatistics())
+
     private val winPatterns = listOf(
         listOf(0, 1, 2), listOf(3, 4, 5), listOf(6, 7, 8),
         listOf(0, 3, 6), listOf(1, 4, 7), listOf(2, 5, 8),
-        listOf(0, 4, 8), listOf(2, 4, 6))
+        listOf(0, 4, 8), listOf(2, 4, 6)
+    )
 
     fun processMove(position: Int) {
         if (isSquareOccupied(position)) return
@@ -46,13 +48,42 @@ class MainActivityViewModel : ViewModel() {
         }
     }
 
+    private fun getInitialStatistics(): Statistics {
+        return Statistics(
+            prefs.getInt(Statistics.MATCHES_KEY, 0),
+            prefs.getInt(Statistics.WINS_KEY, 0),
+            prefs.getInt(Statistics.LOSSES_KEY, 0),
+            prefs.getInt(Statistics.DRAWS_KEY, 0),
+        )
+    }
+
     private fun checkEnd(player: Player): Boolean {
         if (checkWin(player)) {
-            gameEnded.value = if (player == Player.HUMAN) EndGame.HUMAN_WIN else EndGame.COMPUTER_WIN
+            endGame(if (player == Player.HUMAN) EndGame.HUMAN_WIN else EndGame.COMPUTER_WIN)
             return true
         }
-        if (checkDraw()) return true
+        if (checkDraw()) {
+            endGame(EndGame.DRAW)
+            return true
+        }
         return false
+    }
+
+    fun endGame(endGame: EndGame) {
+        gameEnded.value = endGame
+        when (endGame) {
+            EndGame.HUMAN_WIN -> {
+                statistics.value.wins += 1
+            }
+            EndGame.COMPUTER_WIN -> {
+                statistics.value.losses += 1
+            }
+            EndGame.DRAW -> {
+                statistics.value.draws += 1
+            }
+        }
+        statistics.value.matches += 1
+        writeToPrefs()
     }
 
     fun resetGame() {
@@ -67,7 +98,8 @@ class MainActivityViewModel : ViewModel() {
 
     private fun determineComputerMovePosition(): Int {
         //win
-        val computerPositions = moves.filter { it?.player == Player.COMPUTER }.mapNotNull { it?.boardIndex!! }
+        val computerPositions =
+            moves.filter { it?.player == Player.COMPUTER }.mapNotNull { it?.boardIndex!! }
         for (pattern in winPatterns) {
             val filteredPattern = pattern.filter { !computerPositions.contains(it) }
             if (filteredPattern.size == 1 && !isSquareOccupied(filteredPattern[0])) {
@@ -76,7 +108,8 @@ class MainActivityViewModel : ViewModel() {
         }
 
         //block
-        val playerPositions = moves.filter { it?.player == Player.HUMAN }.mapNotNull { it?.boardIndex!! }
+        val playerPositions =
+            moves.filter { it?.player == Player.HUMAN }.mapNotNull { it?.boardIndex!! }
         for (pattern in winPatterns) {
             val filteredPattern = pattern.filter { !playerPositions.contains(it) }
             if (filteredPattern.size == 1 && !isSquareOccupied(filteredPattern[0])) {
@@ -94,7 +127,8 @@ class MainActivityViewModel : ViewModel() {
     }
 
     private fun checkWin(player: Player): Boolean {
-        val playerPositions = moves.filter { it != null && it.player == player }.map { it?.boardIndex!! }
+        val playerPositions =
+            moves.filter { it != null && it.player == player }.map { it?.boardIndex!! }
 
         for (pattern in winPatterns) {
             if (pattern.none { !playerPositions.contains(it) }) {
@@ -107,10 +141,18 @@ class MainActivityViewModel : ViewModel() {
 
     private fun checkDraw(): Boolean {
         if (moves.filterNotNull().size == 9) {
-            gameEnded.value = EndGame.DRAW
             return true
         }
         return false
+    }
+
+    private fun writeToPrefs() {
+        val editor = prefs.edit()
+        editor.putInt(Statistics.MATCHES_KEY, statistics.value.matches)
+        editor.putInt(Statistics.WINS_KEY, statistics.value.wins)
+        editor.putInt(Statistics.LOSSES_KEY, statistics.value.losses)
+        editor.putInt(Statistics.DRAWS_KEY, statistics.value.draws)
+        editor.apply()
     }
 }
 
