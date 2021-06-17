@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jogo da Velha</string>
+    <string name="statistics_card_title">Estatísticas</string>
+    <string name="statistics_matches">Partidas jogadas: %d</string>
+    <string name="statistics_wins">Vitórias: %d</string>
+    <string name="statistics_losses">Derrotas: %d</string>
+    <string name="statistics_draws">Empates: %d</string>
+    <string name="end_dialog_win_title">Você venceu!</string>
+    <string name="end_dialog_win_message">Parabéns! Você é muito inteligente</string>
+    <string name="end_dialog_win_button">Uhul!</string>
+    <string name="end_dialog_loss_title">Você perdeu!</string>
+    <string name="end_dialog_loss_message">Sinto muito, mais sorte da próxima vez</string>
+    <string name="end_dialog_loss_button">Revanche!</string>
+    <string name="end_dialog_draw_title">Empate!</string>
+    <string name="end_dialog_draw_message">Que grande batalha tivemos aqui...</string>
+    <string name="end_dialog_draw_button">Tentar novamente</string>
+</resources>

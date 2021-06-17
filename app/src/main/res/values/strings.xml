@@ -12,6 +12,6 @@
     <string name="end_dialog_loss_message">Sorry, maybe you\'ll do better the next time</string>
     <string name="end_dialog_loss_button">Rematch!</string>
     <string name="end_dialog_draw_title">Draw!</string>
-    <string name="end_dialog_draw_message">What a battle of wits we have here...</string>
+    <string name="end_dialog_draw_message">What a battle of wits we have here…</string>
     <string name="end_dialog_draw_button">Try again</string>
 </resources>
