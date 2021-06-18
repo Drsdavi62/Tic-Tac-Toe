@@ -62,12 +62,13 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun checkEnd(player: Player): Boolean {
-        if (checkWin(player)) {
-            endGame(if (player == Player.HUMAN) EndGame.HUMAN_WIN else EndGame.COMPUTER_WIN)
+        val checkWin = checkWin(player)
+        if (checkWin != -1) {
+            endGame(EndGame.Win(player, checkWin))
             return true
         }
         if (checkDraw()) {
-            endGame(EndGame.DRAW)
+            endGame(EndGame.Draw)
             return true
         }
         return false
@@ -76,15 +77,19 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     fun endGame(endGame: EndGame) {
         gameEnded.value = endGame
         when (endGame) {
-            EndGame.HUMAN_WIN -> {
-                statistics.value.wins += 1
+            is EndGame.Win -> {
+                if (endGame.player == Player.HUMAN) {
+                    statistics.value.wins += 1
+                } else {
+                    statistics.value.losses += 1
+                }
             }
-            EndGame.COMPUTER_WIN -> {
-                statistics.value.losses += 1
-            }
-            EndGame.DRAW -> {
+            EndGame.Draw -> {
                 statistics.value.draws += 1
             }
+        }
+        viewModelScope.launch {
+            delay(500)
         }
         writeToPrefs()
     }
@@ -137,17 +142,17 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         return nine.filter { !usedPositions.contains(it) }.random()
     }
 
-    private fun checkWin(player: Player): Boolean {
+    private fun checkWin(player: Player): Int {
         val playerPositions =
             moves.filter { it != null && it.player == player }.map { it?.boardIndex!! }
 
-        for (pattern in winPatterns) {
+        for ((index, pattern) in winPatterns.withIndex()) {
             if (pattern.none { !playerPositions.contains(it) }) {
-                return true
+                return index
             }
         }
 
-        return false
+        return -1
     }
 
     private fun checkDraw(): Boolean {
@@ -175,6 +180,7 @@ enum class Player {
     HUMAN, COMPUTER
 }
 
-enum class EndGame {
-    HUMAN_WIN, COMPUTER_WIN, DRAW
+sealed class EndGame {
+    data class Win(val player: Player, val winPatternPosition: Int): EndGame()
+    object Draw: EndGame()
 }

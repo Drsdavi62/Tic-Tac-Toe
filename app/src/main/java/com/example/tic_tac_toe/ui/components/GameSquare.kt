@@ -31,7 +31,7 @@ fun GameSquare (
             shape = MaterialTheme.shapes.small,
             modifier = Modifier
                 .size(cardSize)
-                .padding(5.dp),
+                .padding(vertical = 5.dp, horizontal = 5.dp),
             contentColor = Color.White,
             onClick = {
                 if (!touchAvailable) return@Card
