@@ -88,9 +88,6 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                 statistics.value.draws += 1
             }
         }
-        viewModelScope.launch {
-            delay(500)
-        }
         writeToPrefs()
     }
 

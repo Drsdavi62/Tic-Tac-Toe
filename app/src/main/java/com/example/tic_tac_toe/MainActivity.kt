@@ -4,35 +4,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.example.tic_tac_toe.ui.components.EndGameAlertDialog
 import com.example.tic_tac_toe.ui.components.GameSquare
 import com.example.tic_tac_toe.ui.components.StatisticsCard
-import com.example.tic_tac_toe.ui.components.WinLine
+import com.example.tic_tac_toe.ui.components.WinCanvas
 import com.example.tic_tac_toe.ui.theme.TicTacToeTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.sqrt
 
 class MainActivity : ComponentActivity() {
 
@@ -80,16 +71,15 @@ class MainActivity : ComponentActivity() {
                                     showDialog.value = false
                                     drawLine.value = false
                                 },
-                                endGame = it)
+                                endGame = it
+                            )
                         }
 
                         StatisticsCard(statistics = statistics)
 
                         Spacer(modifier = Modifier.padding(16.dp))
 
-                        Box(
-
-                        ) {
+                        Box {
                             LazyVerticalGrid(
                                 cells = GridCells.Fixed(3),
 
@@ -107,16 +97,18 @@ class MainActivity : ComponentActivity() {
 
                             gameEnded?.let {
                                 if (it is EndGame.Win) {
-                                    WinLine(
+                                    WinCanvas(
+                                        draw = drawLine.value,
                                         cardSize = cardSize,
-                                        show = drawLine.value,
                                         winPatternPosition = it.winPatternPosition
                                     )
                                     drawLine.value = true
                                     lifecycleScope.launch {
-                                        delay(400)
+                                        delay(350)
                                         showDialog.value = true
                                     }
+                                } else {
+                                    showDialog.value = true
                                 }
                             }
                         }

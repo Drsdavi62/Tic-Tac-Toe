@@ -33,7 +33,7 @@ fun StatisticsCard(
             Text(
                 text = stringResource(R.string.statistics_card_title),
                 style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.primary,
+                color = MaterialTheme.colors.primaryVariant,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.padding(8.dp))
