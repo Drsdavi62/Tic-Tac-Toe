@@ -22,6 +22,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     var moves = mutableStateListOf<Move?>(null, null, null, null, null, null, null, null, null)
     val gameEnded = mutableStateOf<EndGame?>(null)
+    val waitingForOpponent = mutableStateOf(false)
 
     var playerStarted = true
     val touchAvailable = mutableStateOf(true)
@@ -53,8 +54,13 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             touchAvailable.value = playersTurn
             playerStarted = playersTurn
         }
+        val onPlayerAmount = Emitter.Listener {
+            val players = it[0] as Int
+            waitingForOpponent.value = players == 1
+        }
         socket.on("updateMoves", onUpdateMove)
         socket.on("updateTurn", onUpdateTurn)
+        socket.on("playersAmount", onPlayerAmount)
         socket.connect()
     }
 

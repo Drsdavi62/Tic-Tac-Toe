@@ -7,9 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,6 +34,7 @@ class MainActivity : ComponentActivity() {
                 val moves = viewModel.moves
                 val gameEnded = viewModel.gameEnded.value
                 val touchAvailable = viewModel.touchAvailable.value
+                val waitingOpponent = viewModel.waitingForOpponent.value
                 val showDialog = remember { mutableStateOf(false) }
 
                 val statistics = viewModel.statistics.value
@@ -67,6 +66,17 @@ class MainActivity : ComponentActivity() {
                                     drawLine.value = false
                                 },
                                 endGame = it
+                            )
+                        }
+
+                        if (waitingOpponent) {
+                            AlertDialog(
+                                onDismissRequest = {  },
+                                title = { Text(text = getString(R.string.you_are_alone_message)) },
+                                text = { Text(
+                                    text = getString(R.string.waiting_opponent_message)
+                                ) },
+                                confirmButton = {}
                             )
                         }
 

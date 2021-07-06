@@ -16,4 +16,6 @@
     <string name="end_dialog_draw_button">Try again</string>
     <string name="your_turn_message">It\'s your turn!</string>
     <string name="wait_opponent_message">Wait for the opponent</string>
+    <string name="you_are_alone_message">You\'re all alone</string>
+    <string name="waiting_opponent_message">Waiting for an opponent…</string>
 </resources>
