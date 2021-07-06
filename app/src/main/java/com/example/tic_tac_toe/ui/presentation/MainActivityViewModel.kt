@@ -1,18 +1,15 @@
-package com.example.tic_tac_toe
+package com.example.tic_tac_toe.ui.presentation
 
 import android.app.Application
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
+import com.example.tic_tac_toe.models.EndGame
+import com.example.tic_tac_toe.models.Move
+import com.example.tic_tac_toe.models.Player
+import com.example.tic_tac_toe.models.Statistics
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -166,18 +163,4 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         editor.putInt(Statistics.DRAWS_KEY, statistics.value.draws)
         editor.apply()
     }
-}
-
-class Move(val player: Player, val boardIndex: Int) {
-    val indicator: ImageVector
-        get() = if (player == Player.HUMAN) Icons.Filled.Close else Icons.Outlined.Circle
-}
-
-enum class Player {
-    HUMAN, COMPUTER
-}
-
-sealed class EndGame {
-    data class Win(val player: Player, val winPatternPosition: Int): EndGame()
-    object Draw: EndGame()
 }
