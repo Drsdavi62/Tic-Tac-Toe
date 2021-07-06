@@ -2,17 +2,17 @@ package com.example.tic_tac_toe
 
 import android.app.Application
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -23,8 +23,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     var moves = mutableStateListOf<Move?>(null, null, null, null, null, null, null, null, null)
     val gameEnded = mutableStateOf<EndGame?>(null)
 
-    private var playerStarts = true
-    val touchAvailable = mutableStateOf(playerStarts)
+    var playerStarted = true
+    val touchAvailable = mutableStateOf(true)
 
     val statistics = mutableStateOf(getInitialStatistics())
 
@@ -34,23 +34,42 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         listOf(0, 4, 8), listOf(2, 4, 6)
     )
 
-    fun processMove(position: Int) {
-        if (isSquareOccupied(position)) return
-        moves[position] = Move(Player.HUMAN, position)
+    private val socket: Socket = IO.socket("http://192.168.1.101:5000/")
 
-        if (checkEnd(Player.HUMAN)) return
+    init {
+        setupSocket()
+    }
 
-        touchAvailable.value = false
-
-        viewModelScope.launch {
-            delay(500)
-            val computerPosition = determineComputerMovePosition()
-            moves[computerPosition] = Move(Player.COMPUTER, computerPosition)
-
-            if (checkEnd(Player.COMPUTER)) return@launch
-
+    private fun setupSocket() {
+        val onUpdateMove = Emitter.Listener {
+            val movePosition = it[0] as Int
+            if (isSquareOccupied(movePosition)) return@Listener
+            moves[movePosition] = Move(Player.OPPONENT, movePosition)
+            if (checkEnd(Player.OPPONENT)) return@Listener
             touchAvailable.value = true
         }
+        val onUpdateTurn = Emitter.Listener {
+            val playersTurn = it[0] as Boolean
+            touchAvailable.value = playersTurn
+            playerStarted = playersTurn
+        }
+        socket.on("updateMoves", onUpdateMove)
+        socket.on("updateTurn", onUpdateTurn)
+        socket.connect()
+    }
+
+    fun processMove(position: Int) {
+        if (isSquareOccupied(position)) return
+        moves[position] = Move(Player.USER, position)
+
+        viewModelScope.launch {
+            delay(300)
+            socket.emit("move", position)
+        }
+
+        if (checkEnd(Player.USER)) return
+
+        touchAvailable.value = false
     }
 
     private fun getInitialStatistics(): Statistics {
@@ -78,7 +97,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         gameEnded.value = endGame
         when (endGame) {
             is EndGame.Win -> {
-                if (endGame.player == Player.HUMAN) {
+                if (endGame.player == Player.USER) {
                     statistics.value.wins += 1
                 } else {
                     statistics.value.losses += 1
@@ -94,49 +113,12 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     fun resetGame() {
         gameEnded.value = null
         moves = mutableStateListOf(null, null, null, null, null, null, null, null, null)
-        touchAvailable.value = true
-        if (playerStarts) {
-            viewModelScope.launch {
-                delay(300)
-                val computerPosition = (0 until 9).random()
-                moves[computerPosition] = Move(Player.COMPUTER, computerPosition)
-            }
-        }
-        playerStarts = !playerStarts
+        touchAvailable.value = !playerStarted
+        playerStarted = !playerStarted
     }
 
     private fun isSquareOccupied(position: Int): Boolean {
         return moves.any { it?.boardIndex == position }
-    }
-
-    private fun determineComputerMovePosition(): Int {
-        //win
-        val computerPositions =
-            moves.filter { it?.player == Player.COMPUTER }.mapNotNull { it?.boardIndex!! }
-        for (pattern in winPatterns) {
-            val filteredPattern = pattern.filter { !computerPositions.contains(it) }
-            if (filteredPattern.size == 1 && !isSquareOccupied(filteredPattern[0])) {
-                return filteredPattern[0]
-            }
-        }
-
-        //block
-        val playerPositions =
-            moves.filter { it?.player == Player.HUMAN }.mapNotNull { it?.boardIndex!! }
-        for (pattern in winPatterns) {
-            val filteredPattern = pattern.filter { !playerPositions.contains(it) }
-            if (filteredPattern.size == 1 && !isSquareOccupied(filteredPattern[0])) {
-                return filteredPattern[0]
-            }
-        }
-
-        //middle square
-        if (!isSquareOccupied(4)) return 4
-
-        //random
-        val usedPositions = moves.mapNotNull { it?.boardIndex }
-        val nine = (0 until 9).toMutableList()
-        return nine.filter { !usedPositions.contains(it) }.random()
     }
 
     private fun checkWin(player: Player): Int {
@@ -170,11 +152,11 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
 class Move(val player: Player, val boardIndex: Int) {
     val indicator: ImageVector
-        get() = if (player == Player.HUMAN) Icons.Filled.Close else Icons.Outlined.Circle
+        get() = if (player == Player.USER) Icons.Filled.Close else Icons.Outlined.Circle
 }
 
 enum class Player {
-    HUMAN, COMPUTER
+    USER, OPPONENT
 }
 
 sealed class EndGame {

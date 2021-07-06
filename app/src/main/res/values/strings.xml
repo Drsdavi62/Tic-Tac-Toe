@@ -14,4 +14,6 @@
     <string name="end_dialog_draw_title">Draw!</string>
     <string name="end_dialog_draw_message">What a battle of wits we have here…</string>
     <string name="end_dialog_draw_button">Try again</string>
+    <string name="your_turn_message">It\'s your turn!</string>
+    <string name="wait_opponent_message">Wait for the opponent</string>
 </resources>

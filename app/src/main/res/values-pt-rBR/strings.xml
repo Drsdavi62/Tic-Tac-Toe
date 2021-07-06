@@ -15,4 +15,7 @@
     <string name="end_dialog_draw_title">Empate!</string>
     <string name="end_dialog_draw_message">Que grande batalha tivemos aqui…</string>
     <string name="end_dialog_draw_button">Tentar novamente</string>
+    <string name="your_turn_message">É a sua vez!</string>
+    <string name="wait_opponent_message">Aguarde seu oponente</string>
+
 </resources>
