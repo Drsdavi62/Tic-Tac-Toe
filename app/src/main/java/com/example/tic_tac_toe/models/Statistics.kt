@@ -1,4 +1,4 @@
-package com.example.tic_tac_toe
+package com.example.tic_tac_toe.models
 
 data class Statistics (
     var wins: Int,

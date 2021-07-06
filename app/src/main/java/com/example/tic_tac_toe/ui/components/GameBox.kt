@@ -11,8 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.LifecycleCoroutineScope
-import com.example.tic_tac_toe.EndGame
-import com.example.tic_tac_toe.Move
+import com.example.tic_tac_toe.models.EndGame
+import com.example.tic_tac_toe.models.Move
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

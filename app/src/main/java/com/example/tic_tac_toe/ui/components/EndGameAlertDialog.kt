@@ -5,9 +5,9 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.example.tic_tac_toe.EndGame
-import com.example.tic_tac_toe.Player
 import com.example.tic_tac_toe.R
+import com.example.tic_tac_toe.models.EndGame
+import com.example.tic_tac_toe.models.Player
 
 @Composable
 fun EndGameAlertDialog(

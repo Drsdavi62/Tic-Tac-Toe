@@ -1,4 +1,4 @@
-package com.example.tic_tac_toe
+package com.example.tic_tac_toe.ui.presentation
 
 import android.app.Application
 import androidx.compose.material.icons.Icons
@@ -10,6 +10,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
+import com.example.tic_tac_toe.models.EndGame
+import com.example.tic_tac_toe.models.Move
+import com.example.tic_tac_toe.models.Player
+import com.example.tic_tac_toe.models.Statistics
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -154,18 +158,4 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         editor.putInt(Statistics.DRAWS_KEY, statistics.value.draws)
         editor.apply()
     }
-}
-
-class Move(val player: Player, val boardIndex: Int) {
-    val indicator: ImageVector
-        get() = if (player == Player.USER) Icons.Filled.Close else Icons.Outlined.Circle
-}
-
-enum class Player {
-    USER, OPPONENT
-}
-
-sealed class EndGame {
-    data class Win(val player: Player, val winPatternPosition: Int): EndGame()
-    object Draw: EndGame()
 }

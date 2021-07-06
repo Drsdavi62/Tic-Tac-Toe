@@ -1,4 +1,4 @@
-package com.example.tic_tac_toe
+package com.example.tic_tac_toe.ui.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import com.example.tic_tac_toe.R
+import com.example.tic_tac_toe.models.EndGame
 import com.example.tic_tac_toe.ui.components.EndGameAlertDialog
 import com.example.tic_tac_toe.ui.components.GameBox
 import com.example.tic_tac_toe.ui.components.StatisticsCard
