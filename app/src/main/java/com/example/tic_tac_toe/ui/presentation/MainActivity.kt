@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.example.tic_tac_toe.R
-import com.example.tic_tac_toe.models.EndGame
 import com.example.tic_tac_toe.ui.components.EndGameAlertDialog
 import com.example.tic_tac_toe.ui.components.GameBox
 import com.example.tic_tac_toe.ui.components.StatisticsCard
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
 
                 val moves = viewModel.moves
                 val gameEnded = viewModel.gameEnded.value
-                val touchAvailable = viewModel.touchAvailable.value
+                val isTurn = viewModel.isTurn.value
                 val waitingOpponent = viewModel.waitingForOpponent.value
                 val showDialog = remember { mutableStateOf(false) }
 
@@ -88,7 +87,7 @@ class MainActivity : ComponentActivity() {
 
                         GameBox(
                             cardSize = cardSize,
-                            touchAvailable = touchAvailable,
+                            touchAvailable = isTurn,
                             processMove = viewModel::processMove,
                             moves = moves,
                             gameEnded = gameEnded,
@@ -101,7 +100,7 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.padding(8.dp))
 
                         Text(
-                            text = if (touchAvailable) getString(R.string.your_turn_message) else getString(
+                            text = if (isTurn) getString(R.string.your_turn_message) else getString(
                                 R.string.wait_opponent_message
                             ),
                             style = MaterialTheme.typography.h6,

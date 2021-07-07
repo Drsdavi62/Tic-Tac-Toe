@@ -26,7 +26,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     val waitingForOpponent = mutableStateOf(false)
 
     var playerStarted = true
-    val touchAvailable = mutableStateOf(true)
+    val isTurn = mutableStateOf(true)
 
     val statistics = mutableStateOf(getInitialStatistics())
 
@@ -51,16 +51,18 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             if (isSquareOccupied(movePosition)) return@Listener
             moves[movePosition] = Move(Player.OPPONENT, movePosition)
             if (checkEnd(Player.OPPONENT)) return@Listener
-            touchAvailable.value = true
+            isTurn.value = true
         }
         val onUpdateTurn = Emitter.Listener {
             val playersTurn = it[0] as Boolean
-            touchAvailable.value = playersTurn
+            isTurn.value = playersTurn
             playerStarted = playersTurn
         }
         val onPlayerAmount = Emitter.Listener {
             val players = it[0] as Int
             waitingForOpponent.value = players == 1
+            isTurn.value = true
+            resetBoard()
         }
         val onReset = Emitter.Listener {
             opponentReset = true
@@ -86,7 +88,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
         if (checkEnd(Player.USER)) return
 
-        touchAvailable.value = false
+        isTurn.value = false
     }
 
     private fun getInitialStatistics(): Statistics {
@@ -130,7 +132,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     fun onResetGame() {
         userReset = true
         gameEnded.value = null
-        touchAvailable.value = false
+        isTurn.value = false
         socket.emit("resetGame")
         resetGame()
     }
@@ -140,11 +142,15 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         userReset = false
         opponentReset = false
         gameEnded.value = null
+        resetBoard()
+        isTurn.value = !playerStarted
+        playerStarted = !playerStarted
+    }
+
+    private fun resetBoard() {
         for (i in 0 until moves.size) {
             moves[i] = null
         }
-        touchAvailable.value = !playerStarted
-        playerStarted = !playerStarted
     }
 
     private fun isSquareOccupied(position: Int): Boolean {
