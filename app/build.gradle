@@ -24,6 +24,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField('String', 'SOCKET_URL', '"https://amazing-tic-tac-toe.herokuapp.com/"')
+        }
+        debug {
+            buildConfigField('String', 'SOCKET_URL', '"http://192.168.1.101:5000/"')
         }
     }
     compileOptions {

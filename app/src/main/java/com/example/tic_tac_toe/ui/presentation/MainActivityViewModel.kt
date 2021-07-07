@@ -1,15 +1,12 @@
 package com.example.tic_tac_toe.ui.presentation
 
 import android.app.Application
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
+import com.example.tic_tac_toe.BuildConfig
 import com.example.tic_tac_toe.models.EndGame
 import com.example.tic_tac_toe.models.Move
 import com.example.tic_tac_toe.models.Player
@@ -39,10 +36,10 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         listOf(0, 4, 8), listOf(2, 4, 6)
     )
 
-    private val socket: Socket = IO.socket("http://192.168.1.101:5000/")
+    private val socket: Socket = IO.socket(BuildConfig.SOCKET_URL)
 
-    private var userResetted = false
-    private var opponentResetted = false
+    private var userReset = false
+    private var opponentReset = false
 
     init {
         setupSocket()
@@ -66,7 +63,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             waitingForOpponent.value = players == 1
         }
         val onReset = Emitter.Listener {
-            opponentResetted = true
+            opponentReset = true
             resetGame()
         }
         with(socket) {
@@ -131,7 +128,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun onResetGame() {
-        userResetted = true
+        userReset = true
         gameEnded.value = null
         touchAvailable.value = false
         socket.emit("resetGame")
@@ -139,9 +136,9 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun resetGame() {
-        if (!userResetted || !opponentResetted) return
-        userResetted = false
-        opponentResetted = false
+        if (!userReset || !opponentReset) return
+        userReset = false
+        opponentReset = false
         gameEnded.value = null
         for (i in 0 until moves.size) {
             moves[i] = null
