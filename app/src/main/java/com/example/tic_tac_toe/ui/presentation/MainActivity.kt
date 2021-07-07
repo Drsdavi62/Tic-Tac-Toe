@@ -92,7 +92,8 @@ class MainActivity : ComponentActivity() {
                             processMove = viewModel::processMove,
                             moves = moves,
                             gameEnded = gameEnded,
-                            lifecycleCoroutineScope = lifecycleScope
+                            lifecycleCoroutineScope = lifecycleScope,
+                            drawLine = drawLine
                         ) {
                             showDialog.value = true
                         }

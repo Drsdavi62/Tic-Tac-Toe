@@ -62,10 +62,12 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             val players = it[0] as Int
             waitingForOpponent.value = players == 1
         }
-        socket.on("updateMoves", onUpdateMove)
-        socket.on("updateTurn", onUpdateTurn)
-        socket.on("playersAmount", onPlayerAmount)
-        socket.connect()
+        with(socket) {
+            on("updateMoves", onUpdateMove)
+            on("updateTurn", onUpdateTurn)
+            on("playersAmount", onPlayerAmount)
+            connect()
+        }
     }
 
     fun processMove(position: Int) {
