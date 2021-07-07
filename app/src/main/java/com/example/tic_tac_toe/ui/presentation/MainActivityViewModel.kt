@@ -41,6 +41,9 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     private val socket: Socket = IO.socket("http://192.168.1.101:5000/")
 
+    private var userResetted = false
+    private var opponentResetted = false
+
     init {
         setupSocket()
     }
@@ -62,10 +65,15 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             val players = it[0] as Int
             waitingForOpponent.value = players == 1
         }
+        val onReset = Emitter.Listener {
+            opponentResetted = true
+            resetGame()
+        }
         with(socket) {
             on("updateMoves", onUpdateMove)
             on("updateTurn", onUpdateTurn)
             on("playersAmount", onPlayerAmount)
+            on("resetGame", onReset)
             connect()
         }
     }
@@ -105,7 +113,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         return false
     }
 
-    fun endGame(endGame: EndGame) {
+    private fun endGame(endGame: EndGame) {
         gameEnded.value = endGame
         when (endGame) {
             is EndGame.Win -> {
@@ -122,9 +130,22 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         writeToPrefs()
     }
 
-    fun resetGame() {
+    fun onResetGame() {
+        userResetted = true
         gameEnded.value = null
-        moves = mutableStateListOf(null, null, null, null, null, null, null, null, null)
+        touchAvailable.value = false
+        socket.emit("resetGame")
+        resetGame()
+    }
+
+    private fun resetGame() {
+        if (!userResetted || !opponentResetted) return
+        userResetted = false
+        opponentResetted = false
+        gameEnded.value = null
+        for (i in 0 until moves.size) {
+            moves[i] = null
+        }
         touchAvailable.value = !playerStarted
         playerStarted = !playerStarted
     }

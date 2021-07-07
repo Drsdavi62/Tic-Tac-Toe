@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                             EndGameAlertDialog(
                                 show = showDialog.value,
                                 resetGame = {
-                                    viewModel.resetGame()
+                                    viewModel.onResetGame()
                                     showDialog.value = false
                                     drawLine.value = false
                                 },
