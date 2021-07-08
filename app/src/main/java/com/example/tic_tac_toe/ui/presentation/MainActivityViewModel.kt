@@ -68,11 +68,15 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             opponentReset = true
             resetGame()
         }
+        val onOpponentDisconnected = Emitter.Listener {
+            socket.emit("opponentDisconnected")
+        }
         with(socket) {
             on("updateMoves", onUpdateMove)
             on("updateTurn", onUpdateTurn)
             on("playersAmount", onPlayerAmount)
             on("resetGame", onReset)
+            on("opponentDisconnected", onOpponentDisconnected)
             connect()
         }
     }
