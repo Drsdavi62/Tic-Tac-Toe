@@ -1,9 +1,9 @@
 package com.example.tic_tac_toe.ui.presentation
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.tic_tac_toe.R
 import com.example.tic_tac_toe.ui.components.EndGameAlertDialog
@@ -22,16 +23,39 @@ import com.example.tic_tac_toe.ui.theme.TicTacToeTheme
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel by viewModels<MainActivityViewModel>()
+    private lateinit var viewModel: BaseViewModel
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_TicTacToe_NoActionBar)
+
+        viewModel =
+            ViewModelProvider(this@MainActivity).get(OfflineGameViewModel::class.java)
+
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Choose your game mode")
+            .setMessage("Do you want to play online or against the computer?")
+            .setPositiveButton("Online") { dialog, _ ->
+                viewModel =
+                    ViewModelProvider(this@MainActivity).get(OnlineGameViewModel::class.java)
+                    onStart()
+                dialog?.dismiss()
+            }
+            .setNegativeButton("Computer") { dialog, _ ->
+                onStart()
+                dialog?.dismiss()
+            }
+            .create().show()
+    }
+
+    @ExperimentalMaterialApi
+    @ExperimentalFoundationApi
+    override fun onStart() {
+        super.onStart()
         setContent {
             TicTacToeTheme {
-
                 val moves = viewModel.moves
                 val gameEnded = viewModel.gameEnded.value
                 val isTurn = viewModel.isTurn.value
@@ -72,11 +96,13 @@ class MainActivity : ComponentActivity() {
 
                         if (waitingOpponent) {
                             AlertDialog(
-                                onDismissRequest = {  },
+                                onDismissRequest = { },
                                 title = { Text(text = getString(R.string.you_are_alone_message)) },
-                                text = { Text(
-                                    text = getString(R.string.waiting_opponent_message)
-                                ) },
+                                text = {
+                                    Text(
+                                        text = getString(R.string.waiting_opponent_message)
+                                    )
+                                },
                                 confirmButton = {}
                             )
                         }
