@@ -27,7 +27,6 @@ fun GameBox(
     drawLine: MutableState<Boolean>,
     onShowDialog: () -> Unit,
 ) {
-
     Box {
         LazyVerticalGrid(
             cells = GridCells.Fixed(3),
