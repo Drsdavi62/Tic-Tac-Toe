@@ -19,9 +19,11 @@ import com.example.tic_tac_toe.R
 import com.example.tic_tac_toe.ui.components.EndGameAlertDialog
 import com.example.tic_tac_toe.ui.components.GameBox
 import com.example.tic_tac_toe.ui.components.StatisticsCard
+import com.example.tic_tac_toe.ui.setFullScreen
 import com.example.tic_tac_toe.ui.theme.TicTacToeTheme
 
-class MainActivity : ComponentActivity() {
+
+class GameActivity : ComponentActivity() {
 
     private lateinit var viewModel: BaseViewModel
 
@@ -32,19 +34,29 @@ class MainActivity : ComponentActivity() {
         setTheme(R.style.Theme_TicTacToe_NoActionBar)
 
         viewModel =
-            ViewModelProvider(this@MainActivity).get(OfflineGameViewModel::class.java)
+            ViewModelProvider(this@GameActivity).get(OfflineGameViewModel::class.java)
 
-        val alertDialog = AlertDialog.Builder(this)
-            .setTitle("Choose your game mode")
-            .setMessage("Do you want to play online or against the computer?")
-            .setPositiveButton("Online") { dialog, _ ->
+        setContent {
+            TicTacToeTheme {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = MaterialTheme.colors.primary)
+                ) { }
+            }
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.choose_game_mode))
+            .setMessage(getString(R.string.online_computer_question))
+            .setPositiveButton(getString(R.string.online)) { dialog, _ ->
                 viewModel =
-                    ViewModelProvider(this@MainActivity).get(OnlineGameViewModel::class.java)
-                    onStart()
+                    ViewModelProvider(this@GameActivity).get(OnlineGameViewModel::class.java)
+                showGameScreen()
                 dialog?.dismiss()
             }
-            .setNegativeButton("Computer") { dialog, _ ->
-                onStart()
+            .setNegativeButton(getString(R.string.computer)) { dialog, _ ->
+                showGameScreen()
                 dialog?.dismiss()
             }
             .create().show()
@@ -52,8 +64,8 @@ class MainActivity : ComponentActivity() {
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
-    override fun onStart() {
-        super.onStart()
+    private fun showGameScreen() {
+        setFullScreen()
         setContent {
             TicTacToeTheme {
                 val moves = viewModel.moves

@@ -18,4 +18,8 @@
     <string name="wait_opponent_message">Wait for the opponent</string>
     <string name="you_are_alone_message">You\'re all alone</string>
     <string name="waiting_opponent_message">Waiting for an opponent…</string>
+    <string name="choose_game_mode">Choose your game mode</string>
+    <string name="online_computer_question">Do you want to play online or against the computer?</string>
+    <string name="online">Online</string>
+    <string name="computer">Computer</string>
 </resources>

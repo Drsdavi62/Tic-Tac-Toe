@@ -17,6 +17,7 @@
     <style name="Theme.TicTacToe.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="Theme.TicTacToe.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
