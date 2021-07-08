@@ -113,4 +113,8 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
         editor.putInt(Statistics.DRAWS_KEY, statistics.value.draws)
         editor.apply()
     }
+
+    open fun toggleMode() {
+        resetBoard()
+    }
 }

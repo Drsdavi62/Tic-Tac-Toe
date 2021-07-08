@@ -24,11 +24,7 @@ class OnlineGameViewModel(application: Application) : BaseViewModel(application)
     private var userReset = false
     private var opponentReset = false
 
-    init {
-        setupSocket()
-    }
-
-    private fun setupSocket() {
+    fun setupSocket() {
         val onUpdateMove = Emitter.Listener {
             val movePosition = it[0] as Int
             if (isSquareOccupied(movePosition)) return@Listener
@@ -91,5 +87,10 @@ class OnlineGameViewModel(application: Application) : BaseViewModel(application)
         resetBoard()
         isTurn.value = !playerStarted
         playerStarted = !playerStarted
+    }
+
+    override fun toggleMode() {
+        super.toggleMode()
+        socket.disconnect()
     }
 }

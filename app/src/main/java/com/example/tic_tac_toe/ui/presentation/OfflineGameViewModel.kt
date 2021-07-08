@@ -76,4 +76,8 @@ class OfflineGameViewModel(application: Application) : BaseViewModel(application
         playerStarted = !playerStarted
     }
 
+    override fun toggleMode() {
+        resetGame()
+    }
+
 }
