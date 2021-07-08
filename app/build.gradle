@@ -24,6 +24,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField('String', 'SOCKET_URL', '"https://amazing-tic-tac-toe.herokuapp.com/"')
+        }
+        debug {
+            buildConfigField('String', 'SOCKET_URL', '"http://192.168.1.106:5000/"')
         }
     }
     compileOptions {
@@ -61,4 +65,9 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.1'
 
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
+    //socket.io
+    implementation ('io.socket:socket.io-client:2.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 }

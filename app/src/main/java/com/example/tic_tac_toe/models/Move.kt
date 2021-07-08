@@ -7,5 +7,5 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 class Move(val player: Player, val boardIndex: Int) {
     val indicator: ImageVector
-        get() = if (player == Player.HUMAN) Icons.Filled.Close else Icons.Outlined.Circle
+        get() = if (player == Player.USER) Icons.Filled.Close else Icons.Outlined.Circle
 }

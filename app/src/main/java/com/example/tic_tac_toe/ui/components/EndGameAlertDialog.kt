@@ -22,7 +22,7 @@ fun EndGameAlertDialog(
 
     when (endGame) {
         is EndGame.Win -> {
-            if (endGame.player == Player.HUMAN) {
+            if (endGame.player == Player.USER) {
                 title = stringResource(R.string.end_dialog_win_title)
                 message = stringResource(R.string.end_dialog_win_message)
                 buttonTitle = stringResource(R.string.end_dialog_win_button)

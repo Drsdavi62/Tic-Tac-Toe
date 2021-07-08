@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -26,11 +24,9 @@ fun GameBox(
     moves: SnapshotStateList<Move?>,
     gameEnded: EndGame?,
     lifecycleCoroutineScope: LifecycleCoroutineScope,
-    onShowDialog: () -> Unit
+    drawLine: MutableState<Boolean>,
+    onShowDialog: () -> Unit,
 ) {
-
-    val drawLine = remember { mutableStateOf(false) }
-
     Box {
         LazyVerticalGrid(
             cells = GridCells.Fixed(3),

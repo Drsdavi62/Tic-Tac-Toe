@@ -15,4 +15,13 @@
     <string name="end_dialog_draw_title">Empate!</string>
     <string name="end_dialog_draw_message">Que grande batalha tivemos aqui…</string>
     <string name="end_dialog_draw_button">Tentar novamente</string>
+    <string name="your_turn_message">É a sua vez!</string>
+    <string name="wait_opponent_message">Aguarde seu oponente</string>
+    <string name="you_are_alone_message">Você está sozinho</string>
+    <string name="waiting_opponent_message">Aguardando um oponente…</string>
+    <string name="choose_game_mode">Escolha seu modo de jogo</string>
+    <string name="online_computer_question">Você quer jogar online ou contra o computador?</string>
+    <string name="online">Online</string>
+    <string name="computer">Computador</string>
+
 </resources>
