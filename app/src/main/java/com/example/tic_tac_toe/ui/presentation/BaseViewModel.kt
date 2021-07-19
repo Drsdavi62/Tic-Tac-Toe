@@ -5,13 +5,18 @@ import android.content.SharedPreferences
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
+import com.example.tic_tac_toe.business.GameEventListener
+import com.example.tic_tac_toe.business.GameHelper
 import com.example.tic_tac_toe.models.EndGame
 import com.example.tic_tac_toe.models.Move
 import com.example.tic_tac_toe.models.Player
 import com.example.tic_tac_toe.models.Statistics
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
+class BaseViewModel(application: Application) : AndroidViewModel(application), GameEventListener {
     private val prefs: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(getApplication())
 
@@ -24,13 +29,23 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
 
     val statistics = mutableStateOf(getInitialStatistics())
 
-    protected val winPatterns = listOf(
+    var gameHelper = GameHelper(this, moves, viewModelScope)
+        set(value) {
+            field = value
+            resetGame()
+        }
+
+    private val winPatterns = listOf(
         listOf(0, 1, 2), listOf(3, 4, 5), listOf(6, 7, 8),
         listOf(0, 3, 6), listOf(1, 4, 7), listOf(2, 5, 8),
         listOf(0, 4, 8), listOf(2, 4, 6)
     )
 
-    abstract fun processMove(position: Int)
+    fun processMove(position: Int) {
+        moves[position] = Move(Player.USER, position)
+        gameHelper.onPlayerMove(moves)
+        checkEnd(Player.USER)
+    }
 
     private fun getInitialStatistics(): Statistics {
         return Statistics(
@@ -40,7 +55,7 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
         )
     }
 
-    protected fun checkEnd(player: Player): Boolean {
+    private fun checkEnd(player: Player): Boolean {
         val checkWin = checkWin(player)
         if (checkWin != -1) {
             endGame(EndGame.Win(player, checkWin))
@@ -74,16 +89,24 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
         resetGame()
     }
 
-    abstract fun resetGame()
+    fun resetGame() {
+        gameEnded.value = null
+        resetBoard()
+        isTurn.value = true
+        if (playerStarted) {
+            viewModelScope.launch {
+                delay(300)
+                val computerPosition = (0 until 9).random()
+                moves[computerPosition] = Move(Player.OPPONENT, computerPosition)
+            }
+        }
+        playerStarted = !playerStarted
+    }
 
     protected fun resetBoard() {
         for (i in 0 until moves.size) {
             moves[i] = null
         }
-    }
-
-    protected fun isSquareOccupied(position: Int): Boolean {
-        return moves.any { it?.boardIndex == position }
     }
 
     private fun checkWin(player: Player): Int {
@@ -114,7 +137,8 @@ abstract class BaseViewModel(application: Application) : AndroidViewModel(applic
         editor.apply()
     }
 
-    open fun toggleMode() {
-        resetBoard()
+    override fun onOpponentMove(position: Int) {
+        moves[position] = Move(Player.OPPONENT, position)
+        checkEnd(Player.OPPONENT)
     }
 }
