@@ -11,18 +11,18 @@ class OnlineGameHelper(
     gameEventListener: GameEventListener,
     moves: List<Move?>,
     coroutineScope: CoroutineScope,
-): GameHelper(gameEventListener, moves, coroutineScope) {
+) : GameHelper(gameEventListener, moves, coroutineScope) {
 
-    private val socket: Socket = IO.socket(BuildConfig.SOCKET_URL)
+    private val socket: Socket? = IO.socket(BuildConfig.SOCKET_URL)
 
     init {
         opponentReset = false
         setupSocket()
     }
 
-    override fun onPlayerMove(position: Int, moves: List<Move?>) {
-        super.onPlayerMove(position, moves)
-        socket.emit("move", position)
+    override fun onPlayerMove(position: Int, moves: List<Move?>, winMove: Boolean) {
+        super.onPlayerMove(position, moves, winMove)
+        socket?.emit("move", position)
     }
 
     private fun setupSocket() {
@@ -41,20 +41,38 @@ class OnlineGameHelper(
         }
         val onReset = Emitter.Listener {
             opponentReset = true
-            gameEventListener.onReset()
+            if (userReset && opponentReset) {
+                gameEventListener.onReset()
+            }
         }
         val onOpponentDisconnected = Emitter.Listener {
-            socket.emit("opponentDisconnected")
+            socket?.emit("opponentDisconnected")
         }
-        with(socket) {
-            on("updateMoves", onUpdateMove)
-            on("updateTurn", onUpdateTurn)
-            on("playersAmount", onPlayerAmount)
-            on("resetGame", onReset)
-            on("opponentDisconnected", onOpponentDisconnected)
-            connect()
+
+        socket?.let {
+            with(it) {
+                on("updateMoves", onUpdateMove)
+                on("updateTurn", onUpdateTurn)
+                on("playersAmount", onPlayerAmount)
+                on("resetGame", onReset)
+                on("opponentDisconnected", onOpponentDisconnected)
+                connect()
+            }
         }
     }
 
+    override fun resetForUser() {
+        super.resetForUser()
+        socket?.emit("resetGame")
+    }
+
+    override fun resetGame() {
+        super.resetGame()
+        opponentReset = false
+    }
+
+    fun disconnect() {
+        socket?.disconnect()
+    }
 
 }

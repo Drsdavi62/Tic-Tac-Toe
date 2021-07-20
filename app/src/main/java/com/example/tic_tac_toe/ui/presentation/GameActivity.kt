@@ -2,7 +2,6 @@ package com.example.tic_tac_toe.ui.presentation
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -25,7 +24,7 @@ import com.example.tic_tac_toe.ui.theme.TicTacToeTheme
 
 class GameActivity : ComponentActivity() {
 
-    private lateinit var viewModel: BaseViewModel
+    private lateinit var viewModel: GameViewModel
     private var gameMode: GameMode = GameMode.NOT_STARTED
 
     @ExperimentalMaterialApi
@@ -33,7 +32,7 @@ class GameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_TicTacToe_NoActionBar)
-        viewModel = ViewModelProvider(this@GameActivity).get(BaseViewModel::class.java)
+        viewModel = ViewModelProvider(this@GameActivity).get(GameViewModel::class.java)
         setContent { EmptyView() }
 
         showGameModeDialog()
@@ -64,9 +63,9 @@ class GameActivity : ComponentActivity() {
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
     private fun showGameScreen() {
-        setFullScreen()
         setContent {
             TicTacToeTheme {
+                setFullScreen()
                 val moves = viewModel.moves
                 val gameEnded = viewModel.gameEnded.value
                 val isTurn = viewModel.isTurn.value

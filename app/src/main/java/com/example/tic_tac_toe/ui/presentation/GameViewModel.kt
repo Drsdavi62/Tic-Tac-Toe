@@ -15,7 +15,7 @@ import com.example.tic_tac_toe.models.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class BaseViewModel(application: Application) : AndroidViewModel(application), GameEventListener {
+class GameViewModel(application: Application) : AndroidViewModel(application), GameEventListener {
     private val prefs: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(getApplication())
 
@@ -23,7 +23,7 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
     val gameEnded = mutableStateOf<EndGame?>(null)
     val waitingForOpponent = mutableStateOf(false)
 
-    var playerStarted = true
+    var playerStarted = false
     val isTurn = mutableStateOf(true)
 
     val statistics = mutableStateOf(getInitialStatistics())
@@ -33,18 +33,23 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
     private var gameMode: GameMode = GameMode.NOT_STARTED
 
     fun setGameMode(gameMode: GameMode) {
-        if (gameMode == GameMode.NOT_STARTED) {
-            resetGame()
-        }
-        this.gameMode = gameMode
-        when(gameMode) {
+        resetBoard()
+        when (gameMode) {
             GameMode.ONLINE -> {
                 gameHelper = OnlineGameHelper(this, moves, viewModelScope)
             }
             GameMode.OFFLINE -> {
+                if (this.gameMode == GameMode.ONLINE) {
+                    (gameHelper as? OnlineGameHelper)?.disconnect()
+                }
                 gameHelper = OfflineGameHelper(this, moves, viewModelScope)
             }
-            else -> {}
+            else -> {
+            }
+        }
+        this.gameMode = gameMode
+        if (gameMode != GameMode.NOT_STARTED) {
+            resetGame()
         }
     }
 
@@ -55,10 +60,18 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
     )
 
     fun processMove(position: Int) {
+        if (isSquareOccupied(position)) return
         moves[position] = Move(Player.USER, position)
+        if (checkEnd(Player.USER)) {
+            gameHelper.onPlayerMove(position, moves, true)
+            return
+        }
         gameHelper.onPlayerMove(position, moves)
-        checkEnd(Player.USER)
         isTurn.value = false
+    }
+
+    private fun isSquareOccupied(position: Int): Boolean {
+        return moves.any { it?.boardIndex == position }
     }
 
     private fun getInitialStatistics(): Statistics {
@@ -100,24 +113,34 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
     }
 
     fun onResetGame() {
-        resetGame()
+        gameHelper.resetForUser()
+        gameEnded.value = null
+        isTurn.value = false
+        if (gameHelper.opponentReset && gameHelper.userReset) {
+            resetGame()
+        }
     }
 
     private fun resetGame() {
         gameEnded.value = null
         resetBoard()
-        isTurn.value = true
-        if (playerStarted) {
-            viewModelScope.launch {
-                delay(300)
-                val computerPosition = (0 until 9).random()
-                moves[computerPosition] = Move(Player.OPPONENT, computerPosition)
+        gameHelper.resetGame()
+        if (gameMode == GameMode.ONLINE) {
+            isTurn.value = !playerStarted
+        } else if (gameMode == GameMode.OFFLINE) {
+            isTurn.value = true
+            if (playerStarted) {
+                viewModelScope.launch {
+                    delay(300)
+                    val computerPosition = (0 until 9).random()
+                    moves[computerPosition] = Move(Player.OPPONENT, computerPosition)
+                }
             }
         }
         playerStarted = !playerStarted
     }
 
-    protected fun resetBoard() {
+    private fun resetBoard() {
         for (i in 0 until moves.size) {
             moves[i] = null
         }
@@ -151,9 +174,13 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
         editor.apply()
     }
 
+    /**
+     * onEventListener methods
+     */
+
     override fun onOpponentMove(position: Int) {
         moves[position] = Move(Player.OPPONENT, position)
-        checkEnd(Player.OPPONENT)
+        if (checkEnd(Player.OPPONENT)) return
         isTurn.value = true
     }
 

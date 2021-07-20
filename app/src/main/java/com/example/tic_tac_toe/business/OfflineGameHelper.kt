@@ -10,8 +10,9 @@ class OfflineGameHelper(gameEventListener: GameEventListener,
                         moves: List<Move?>, coroutineScope: CoroutineScope
 ) : GameHelper(gameEventListener, moves, coroutineScope) {
 
-    override fun onPlayerMove(position: Int, moves: List<Move?>) {
-        super.onPlayerMove(position, moves)
+    override fun onPlayerMove(position: Int, moves: List<Move?>, winMove: Boolean) {
+        super.onPlayerMove(position, moves, winMove)
+        if (winMove) return
         coroutineScope.launch {
             delay(500)
             gameEventListener.onOpponentMove(determineComputerMovePosition())

@@ -17,15 +17,24 @@ abstract class GameHelper(
         listOf(0, 4, 8), listOf(2, 4, 6)
     )
 
-    protected var userReset = false
-    protected var opponentReset = true
+    var userReset = false
+    var opponentReset = true
 
-    open fun onPlayerMove(position: Int, moves: List<Move?>) {
+    open fun onPlayerMove(position: Int, moves: List<Move?>, winMove: Boolean = false) {
         this.moves = moves
     }
 
     protected fun isSquareOccupied(position: Int): Boolean {
         return moves.any { it?.boardIndex == position }
+    }
+
+    open fun resetForUser() {
+        userReset = true
+    }
+
+    open fun resetGame() {
+        userReset = false
+        opponentReset = true
     }
 }
 
