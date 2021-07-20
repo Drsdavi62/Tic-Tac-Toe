@@ -33,7 +33,7 @@ class GameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_TicTacToe_NoActionBar)
-
+        viewModel = ViewModelProvider(this@GameActivity).get(BaseViewModel::class.java)
         setContent { EmptyView() }
 
         showGameModeDialog()
@@ -46,24 +46,16 @@ class GameActivity : ComponentActivity() {
             .setTitle(getString(R.string.choose_game_mode))
             .setMessage(getString(R.string.online_computer_question))
             .setPositiveButton(getString(R.string.online)) { dialog, _ ->
-//                if (gameMode == GameMode.ONLINE) return@setPositiveButton
-//                if (gameMode != GameMode.NOT_STARTED) viewModel.toggleMode()
-//                viewModel =
-//                    ViewModelProvider(this@GameActivity).get(OnlineGameViewModel::class.java)
-//                (viewModel as OnlineGameViewModel).setupSocket()
-//                gameMode = GameMode.ONLINE
-//                showGameScreen()
-                Toast.makeText(this, "Not available yet", Toast.LENGTH_LONG).show()
-//                dialog?.dismiss()
+                if (gameMode == GameMode.ONLINE) return@setPositiveButton
+                gameMode = GameMode.ONLINE
+                viewModel.setGameMode(gameMode)
+                showGameScreen()
             }
             .setNegativeButton(getString(R.string.computer)) { dialog, _ ->
                 if (gameMode == GameMode.OFFLINE) return@setNegativeButton
-//                if (gameMode != GameMode.NOT_STARTED) viewModel.toggleMode()
-                viewModel =
-                    ViewModelProvider(this@GameActivity).get(BaseViewModel::class.java)
-                showGameScreen()
                 gameMode = GameMode.OFFLINE
-                dialog?.dismiss()
+                viewModel.setGameMode(gameMode)
+                showGameScreen()
             }
             .setCancelable(false)
             .create().show()

@@ -9,10 +9,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import com.example.tic_tac_toe.business.GameEventListener
 import com.example.tic_tac_toe.business.GameHelper
-import com.example.tic_tac_toe.models.EndGame
-import com.example.tic_tac_toe.models.Move
-import com.example.tic_tac_toe.models.Player
-import com.example.tic_tac_toe.models.Statistics
+import com.example.tic_tac_toe.business.OfflineGameHelper
+import com.example.tic_tac_toe.business.OnlineGameHelper
+import com.example.tic_tac_toe.models.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -29,11 +28,25 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
 
     val statistics = mutableStateOf(getInitialStatistics())
 
-    var gameHelper = GameHelper(this, moves, viewModelScope)
-        set(value) {
-            field = value
+    private lateinit var gameHelper: GameHelper
+
+    private var gameMode: GameMode = GameMode.NOT_STARTED
+
+    fun setGameMode(gameMode: GameMode) {
+        if (gameMode == GameMode.NOT_STARTED) {
             resetGame()
         }
+        this.gameMode = gameMode
+        when(gameMode) {
+            GameMode.ONLINE -> {
+                gameHelper = OnlineGameHelper(this, moves, viewModelScope)
+            }
+            GameMode.OFFLINE -> {
+                gameHelper = OfflineGameHelper(this, moves, viewModelScope)
+            }
+            else -> {}
+        }
+    }
 
     private val winPatterns = listOf(
         listOf(0, 1, 2), listOf(3, 4, 5), listOf(6, 7, 8),
@@ -43,8 +56,9 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
 
     fun processMove(position: Int) {
         moves[position] = Move(Player.USER, position)
-        gameHelper.onPlayerMove(moves)
+        gameHelper.onPlayerMove(position, moves)
         checkEnd(Player.USER)
+        isTurn.value = false
     }
 
     private fun getInitialStatistics(): Statistics {
@@ -85,11 +99,11 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
         writeToPrefs()
     }
 
-    open fun onResetGame() {
+    fun onResetGame() {
         resetGame()
     }
 
-    fun resetGame() {
+    private fun resetGame() {
         gameEnded.value = null
         resetBoard()
         isTurn.value = true
@@ -140,5 +154,21 @@ class BaseViewModel(application: Application) : AndroidViewModel(application), G
     override fun onOpponentMove(position: Int) {
         moves[position] = Move(Player.OPPONENT, position)
         checkEnd(Player.OPPONENT)
+        isTurn.value = true
+    }
+
+    override fun onUpdateTurn(playersTurn: Boolean) {
+        isTurn.value = playersTurn
+        playerStarted = playersTurn
+    }
+
+    override fun onPlayerAmount(playersAmount: Int) {
+        waitingForOpponent.value = playersAmount == 1
+        isTurn.value = true
+        resetBoard()
+    }
+
+    override fun onReset() {
+        resetGame()
     }
 }
