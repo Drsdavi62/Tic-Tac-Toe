@@ -1,34 +1,21 @@
-package com.example.tic_tac_toe.ui.presentation
+package com.example.tic_tac_toe.business
 
-import android.app.Application
-import androidx.lifecycle.viewModelScope
 import com.example.tic_tac_toe.models.Move
 import com.example.tic_tac_toe.models.Player
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class OfflineGameViewModel(application: Application) : BaseViewModel(application) {
+class OfflineGameHelper(gameEventListener: GameEventListener,
+                        moves: List<Move?>, coroutineScope: CoroutineScope
+) : GameHelper(gameEventListener, moves, coroutineScope) {
 
-    init {
-        resetBoard()
-    }
-
-    override fun processMove(position: Int) {
-        if (isSquareOccupied(position)) return
-        moves[position] = Move(Player.USER, position)
-
-        if (checkEnd(Player.USER)) return
-
-        isTurn.value = false
-
-        viewModelScope.launch {
+    override fun onPlayerMove(position: Int, moves: List<Move?>, winMove: Boolean) {
+        super.onPlayerMove(position, moves, winMove)
+        if (winMove) return
+        coroutineScope.launch {
             delay(500)
-            val computerPosition = determineComputerMovePosition()
-            moves[computerPosition] = Move(Player.OPPONENT, computerPosition)
-
-            if (checkEnd(Player.OPPONENT)) return@launch
-
-            isTurn.value = true
+            gameEventListener.onOpponentMove(determineComputerMovePosition())
         }
     }
 
@@ -61,19 +48,4 @@ class OfflineGameViewModel(application: Application) : BaseViewModel(application
         val nine = (0 until 9).toMutableList()
         return nine.filter { !usedPositions.contains(it) }.random()
     }
-
-    override fun resetGame() {
-        gameEnded.value = null
-        resetBoard()
-        isTurn.value = true
-        if (playerStarted) {
-            viewModelScope.launch {
-                delay(300)
-                val computerPosition = (0 until 9).random()
-                moves[computerPosition] = Move(Player.OPPONENT, computerPosition)
-            }
-        }
-        playerStarted = !playerStarted
-    }
-
 }
