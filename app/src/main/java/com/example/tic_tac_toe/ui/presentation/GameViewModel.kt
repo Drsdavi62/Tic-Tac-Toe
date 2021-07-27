@@ -21,7 +21,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application), G
 
     var moves = mutableStateListOf<Move?>(null, null, null, null, null, null, null, null, null)
     val gameEnded = mutableStateOf<EndGame?>(null)
-    val waitingForOpponent = mutableStateOf(false)
+    val waitingForOpponent = mutableStateOf(true)
 
     var playerStarted = false
     val isTurn = mutableStateOf(true)
@@ -36,9 +36,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application), G
         resetBoard()
         when (gameMode) {
             GameMode.ONLINE -> {
+                waitingForOpponent.value = true
                 gameHelper = OnlineGameHelper(this, moves, viewModelScope)
             }
             GameMode.OFFLINE -> {
+                waitingForOpponent.value = false
                 if (this.gameMode == GameMode.ONLINE) {
                     (gameHelper as? OnlineGameHelper)?.disconnect()
                 }
