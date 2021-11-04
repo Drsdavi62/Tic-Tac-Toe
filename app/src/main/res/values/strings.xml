@@ -22,4 +22,5 @@
     <string name="online_computer_question">Do you want to play online or against the computer?</string>
     <string name="online">Online</string>
     <string name="computer">Computer</string>
+    <string name="play_offline">Play offline</string>
 </resources>

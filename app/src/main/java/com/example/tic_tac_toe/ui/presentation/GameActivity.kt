@@ -116,7 +116,16 @@ class GameActivity : ComponentActivity() {
                                             text = getString(R.string.waiting_opponent_message)
                                         )
                                     },
-                                    confirmButton = {}
+                                    confirmButton = {},
+                                    dismissButton = {
+                                        Button(onClick = {
+                                            gameMode = GameMode.OFFLINE
+                                            viewModel.setGameMode(gameMode)
+                                            showGameScreen()
+                                        }) {
+                                            Text(text = getString(R.string.play_offline))
+                                        }
+                                    }
                                 )
                             }
 

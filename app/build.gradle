@@ -27,7 +27,7 @@ android {
             buildConfigField('String', 'SOCKET_URL', '"https://amazing-tic-tac-toe.herokuapp.com/"')
         }
         debug {
-            buildConfigField('String', 'SOCKET_URL', '"http://192.168.1.104:5000/"')
+            buildConfigField('String', 'SOCKET_URL', '"https://amazing-tic-tac-toe.herokuapp.com/"')
         }
     }
     compileOptions {
