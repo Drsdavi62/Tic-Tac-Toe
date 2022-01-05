@@ -2,12 +2,15 @@ package com.example.tic_tac_toe.ui.presentation
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.view.MotionEvent
+import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,12 +23,16 @@ import com.example.tic_tac_toe.models.GameMode
 import com.example.tic_tac_toe.ui.components.*
 import com.example.tic_tac_toe.ui.setFullScreen
 import com.example.tic_tac_toe.ui.theme.TicTacToeTheme
+import kotlinx.coroutines.flow.collectLatest
+import org.w3c.dom.Text
 
 
 class GameActivity : ComponentActivity() {
 
     private lateinit var viewModel: GameViewModel
     private var gameMode: GameMode = GameMode.NOT_STARTED
+
+    private var isTurnFlow = true;
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -73,6 +80,12 @@ class GameActivity : ComponentActivity() {
                 val showDialog = remember { mutableStateOf(false) }
 
                 val statistics = viewModel.statistics.value
+
+                LaunchedEffect(key1 = true) {
+                    viewModel.isTurnFlow.collectLatest { isTurn ->
+                        isTurnFlow = isTurn
+                    }
+                }
 
                 BoxWithConstraints(
                     modifier = Modifier
@@ -136,7 +149,11 @@ class GameActivity : ComponentActivity() {
                             GameBox(
                                 cardSize = cardSize,
                                 touchAvailable = isTurn,
-                                processMove = viewModel::processMove,
+                                processMove = {
+                                    if (!isTurn || !isTurnFlow) return@GameBox
+                                    isTurnFlow = false
+                                    viewModel.processMove(it)
+                                },
                                 moves = moves,
                                 gameEnded = gameEnded,
                                 lifecycleCoroutineScope = lifecycleScope,

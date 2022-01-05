@@ -13,6 +13,8 @@ import com.example.tic_tac_toe.business.OfflineGameHelper
 import com.example.tic_tac_toe.business.OnlineGameHelper
 import com.example.tic_tac_toe.models.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class GameViewModel(application: Application) : AndroidViewModel(application), GameEventListener {
@@ -25,6 +27,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application), G
 
     var playerStarted = false
     val isTurn = mutableStateOf(true)
+    private val _isTurnFlow = MutableSharedFlow<Boolean>()
+    val isTurnFlow = _isTurnFlow.asSharedFlow()
 
     val statistics = mutableStateOf(getInitialStatistics())
 
@@ -70,6 +74,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application), G
         }
         gameHelper.onPlayerMove(position, moves)
         isTurn.value = false
+        viewModelScope.launch {
+            _isTurnFlow.emit(false)
+        }
     }
 
     private fun isSquareOccupied(position: Int): Boolean {
@@ -118,6 +125,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application), G
         gameHelper.resetForUser()
         gameEnded.value = null
         isTurn.value = false
+        viewModelScope.launch {
+            _isTurnFlow.emit(false)
+        }
         if (gameHelper.opponentReset && gameHelper.userReset) {
             resetGame()
         }
@@ -129,8 +139,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application), G
         gameHelper.resetGame()
         if (gameMode == GameMode.ONLINE) {
             isTurn.value = !playerStarted
+            viewModelScope.launch {
+                _isTurnFlow.emit(!playerStarted)
+            }
         } else if (gameMode == GameMode.OFFLINE) {
             isTurn.value = true
+            viewModelScope.launch {
+                _isTurnFlow.emit(true)
+            }
             if (playerStarted) {
                 viewModelScope.launch {
                     delay(300)
@@ -184,16 +200,25 @@ class GameViewModel(application: Application) : AndroidViewModel(application), G
         moves[position] = Move(Player.OPPONENT, position)
         if (checkEnd(Player.OPPONENT)) return
         isTurn.value = true
+        viewModelScope.launch {
+            _isTurnFlow.emit(true)
+        }
     }
 
     override fun onUpdateTurn(playersTurn: Boolean) {
         isTurn.value = playersTurn
+        viewModelScope.launch {
+            _isTurnFlow.emit(playersTurn)
+        }
         playerStarted = playersTurn
     }
 
     override fun onPlayerAmount(playersAmount: Int) {
         waitingForOpponent.value = playersAmount == 1
         isTurn.value = true
+        viewModelScope.launch {
+            _isTurnFlow.emit(true)
+        }
         resetBoard()
     }
 
